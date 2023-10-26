@@ -88,3 +88,49 @@ SELECT SUM(costo_referencial)from maquinaria
 SELECT puesto,count(*) from personal
 group by puesto
 
+
+------------------
+--   HAVING     --
+------------------
+
+--Haga una consulta que muestre el total del costo referencial de los proyectos de Cerro Azul y Arcata
+	--group by
+	SELECT ubicacion, sum(costo_referencial) FROM MAQUINARIA
+	WHERE ubicacion in('Cerro Azul','Arcata')
+	group by ubicacion
+
+	--HAVING
+	SELECT ubicacion, sum(costo_referencial) FROM MAQUINARIA
+	GROUP BY ubicacion
+	having ubicacion in('Arcata','Cerro Azul')
+
+--Haga una consulta que muestre el monto total de maquinaria por proyecto, excluya de esa relacion aquellos montos totales que no superen los 90000 soles
+	SELECT ubicacion,sum(costo_referencial) from MAQUINARIA
+	group by ubicacion	
+	having sum(costo_referencial)>90000
+	
+--Haga una consulta que muestre el monto total de maquinaria por proyecto, excluya a la escavadora m2 y de esa relacion aquellos montos totales que no superen los 90000 soles
+	SELECT ubicacion,sum(costo_referencial) from MAQUINARIA
+	where descripcion != 'Escavadora M2'
+	group by ubicacion	
+	having sum(costo_referencial)>90000
+	--order by
+
+
+--Haga una consulta que muestre en que puestos se asignaron a mas de 3 personas.
+	SELECT puesto,count(puesto) from Personal
+	group by puesto
+	having count(puesto)>2
+
+--Haga la consulta 3. Pero excluya al puesto Operador de esta relación	
+	SELECT puesto,count(puesto) from Personal
+	where puesto != 'Operador'
+	group by puesto
+	having count(puesto)>2
+
+--Haga una consulta que muestre que maquinas tienen mas de 2 personas asignadas
+	SELECT MAQUINARIA.descripcion, COUNT(Asignacion.cod_personal)from MAQUINARIA INNER JOIN Asignacion
+	ON MAQUINARIA.cod_maq=Asignacion.cod_maq
+	GROUP BY MAQUINARIA.descripcion
+	--FALTA
+
