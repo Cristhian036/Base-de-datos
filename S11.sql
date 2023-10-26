@@ -65,3 +65,26 @@ SELECT*FROM MAQUINARIA
 SELECT*FROM Personal
 SELECT*FROM Asignacion
 
+--Haga una consulta que muestre cuantas Escavadoras hay por proyecto
+SELECT ubicacion, COUNT(*)FROM MAQUINARIA 
+WHERE DESCRIPCION LIKE 'Escavadora%'
+GROUP BY ubicacion
+
+--Haga una consulta que muestre el monto total de maquinaria por proyecto
+SELECT ubicacion,SUM(costo_referencial)from maquinaria 
+GROUP BY ubicacion
+
+--Haga una consulta que muestre cuantas personas estan asignadas por maquina
+SELECT MAQUINARIA.DESCRIPCION, COUNT(*)FROM MAQUINARIA INNER JOIN ASIGNACION
+ON MAQUINARIA.COD_MAQ = ASIGNACION.COD_MAQ
+GROUP BY MAQUINARIA.DESCRIPCION
+
+--Haga una consulta que muestre cuantas maquinas hay por proyecto, y cuanto es su total de costo
+SELECT COUNT(descripcion),ubicacion,SUM(costo_referencial)from maquinaria 
+GROUP BY ubicacion
+SELECT SUM(costo_referencial)from maquinaria 
+
+--Cuantas personas hay por puesto ordenelas por puesto
+SELECT puesto,count(*) from personal
+group by puesto
+
