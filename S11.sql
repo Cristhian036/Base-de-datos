@@ -35,6 +35,7 @@ VALUES
 ('X003','Perforadora 230','Arcata',27000),
 ('X004','Escavadora M2','Arcata',17800),
 ('X005','Escavadora 700','Arcata',31500),
+('X006','Perforadora 210','Cerro Azul',23600),
 ('X007','Escavadora P3','Cerro Azul',31000),
 ('X008','Generador M45','Cerro Azul',35000),
 ('X009','Perforadora M20','Ares',42000),
@@ -66,27 +67,27 @@ SELECT*FROM Personal
 SELECT*FROM Asignacion
 
 --Haga una consulta que muestre cuantas Escavadoras hay por proyecto
-SELECT ubicacion, COUNT(*)FROM MAQUINARIA 
-WHERE DESCRIPCION LIKE 'Escavadora%'
-GROUP BY ubicacion
+	SELECT ubicacion, COUNT(*)FROM MAQUINARIA 
+	WHERE DESCRIPCION LIKE 'Escavadora%'
+	GROUP BY ubicacion
 
 --Haga una consulta que muestre el monto total de maquinaria por proyecto
-SELECT ubicacion,SUM(costo_referencial)from maquinaria 
-GROUP BY ubicacion
+	SELECT ubicacion,SUM(costo_referencial)from maquinaria 
+	GROUP BY ubicacion
 
 --Haga una consulta que muestre cuantas personas estan asignadas por maquina
-SELECT MAQUINARIA.DESCRIPCION, COUNT(*)FROM MAQUINARIA INNER JOIN ASIGNACION
-ON MAQUINARIA.COD_MAQ = ASIGNACION.COD_MAQ
-GROUP BY MAQUINARIA.DESCRIPCION
+	SELECT MAQUINARIA.DESCRIPCION, COUNT(*)FROM MAQUINARIA INNER JOIN ASIGNACION
+	ON MAQUINARIA.COD_MAQ = ASIGNACION.COD_MAQ
+	GROUP BY MAQUINARIA.DESCRIPCION
 
 --Haga una consulta que muestre cuantas maquinas hay por proyecto, y cuanto es su total de costo
-SELECT COUNT(descripcion),ubicacion,SUM(costo_referencial)from maquinaria 
-GROUP BY ubicacion
-SELECT SUM(costo_referencial)from maquinaria 
+	SELECT COUNT(descripcion),ubicacion,SUM(costo_referencial)from maquinaria 
+	GROUP BY ubicacion
+	SELECT SUM(costo_referencial)from maquinaria 
 
 --Cuantas personas hay por puesto ordenelas por puesto
-SELECT puesto,count(*) from personal
-group by puesto
+	SELECT puesto,count(*) from personal
+	group by puesto
 
 
 ------------------
@@ -132,5 +133,36 @@ group by puesto
 	SELECT MAQUINARIA.descripcion, COUNT(Asignacion.cod_personal)from MAQUINARIA INNER JOIN Asignacion
 	ON MAQUINARIA.cod_maq=Asignacion.cod_maq
 	GROUP BY MAQUINARIA.descripcion
-	--FALTA
+
+----------------------------------
+--		TOP SUBCONSULTAS		--
+----------------------------------
+
+--1. Diga cual es el proyecto con costo referencial mas bajo y que no tenga personal asignado a sus maquinarias
+--primero por partes
+	SELECT TOP 1 ubicacion, SUM(COSTO_REFERENCIAL)FROM MAQUINARIA INNER JOIN ASIGNACION
+	ON MAQUINARIA.COD_MAQ = ASIGNACION.COD_MAQ
+	GROUP BY ubicacion
+	ORDER BY SUM(COSTO_REFERENCIAL) ASC
+
+	SELECT TOP 1 UBICACION, SUM(COSTO_REFERENCIAL)FROM MAQUINARIA LEFT JOIN ASIGNACION
+	ON MAQUINARIA.COD_MAQ = ASIGNACION.COD_MAQ
+	WHERE ASIGNACION.COD_PERSONAL IS NULL
+	GROUP BY ubicacion
+	ORDER BY SUM(COSTO_REFERENCIAL) ASC
+
+--2. Diga el nombre completo del personal, que este asignado en mas de una maquinaria
+	
+--3. Muestre las maquinarias asignadas al proyecto Arcata cuyo costo_referencial este por debajo del promedio
+
+--4. Muestre el nombre del personal que esta asignado a la penultima maquinaría con costo mas bajo
+
+--5. Muestre los 2 primeros nombres del personal que no seas perforistas asignados a las maquinarias de Ares con mayor costo
+	SELECT Personal.nombres, Personal.apellidopat,Personal.puesto,MAQUINARIA.descripcion,MAQUINARIA.costo_referencial 
+	FROM MAQUINARIA inner join Asignacion 
+	on MAQUINARIA.cod_maq=Asignacion.cod_maq inner join Personal 
+	on Asignacion.cod_personal=Personal.cod_personal
+	where (Personal.puesto !='Perforista' and MAQUINARIA.ubicacion!='Ares')
+	order by costo_referencial desc
+
 
