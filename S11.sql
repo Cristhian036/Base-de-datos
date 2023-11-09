@@ -182,32 +182,45 @@ SELECT*FROM Asignacion
 
 --2. Diga el nombre completo del personal, que este asignado en mas de una maquinaria
 	
+	SELECT cod_personal, nombres, apellidopat FROM Personal
+	WHERE cod_personal = 
+	(SELECT TOP 1 Asignacion.cod_personal from Asignacion
+	GROUP BY ASIGNACION.COD_PERSONAL
+	ORDER BY COUNT(ASIGNACION.COD_PERSONAL) DESC)
+
+	SELECT PERSONAL.COD_PERSONAL, PERSONAL.NOMBRES,	PERSONAL.APELLIDOPAT
+	FROM PERSONAL
+	WHERE COD_PERSONAL IN (SELECT ASIGNACION.COD_PERSONAL
+	FROM ASIGNACION
+	GROUP BY ASIGNACION.COD_PERSONAL
+	HAVING COUNT(ASIGNACION.COD_PERSONAL) > 1)
+
 --3. Muestre las maquinarias asignadas al proyecto Arcata cuyo costo_referencial este por debajo del promedio
 
+	SELECT AVG(costo_referencial) FROM MAQUINARIA --PROMEDIO
+	SELECT * FROM MAQUINARIA
+	WHERE MAQUINARIA.ubicacion = 'Arcata' AND MAQUINARIA.costo_referencial < 
+	(SELECT AVG(costo_referencial) FROM MAQUINARIA)
+		
 --4. Muestre el nombre del personal que esta asignado a la penultima maquinaría con costo mas bajo
+	--maquinaria
+	SELECT TOP 2 * FROM MAQUINARIA
+	order by costo_referencial asc
+	--asignados
+	select * from Asignacion inner join Personal on Asignacion.cod_personal=Personal.cod_personal
+	where cod_maq = 'X010'
 
+	SELECT Asignacion.cod_maq,Asignacion.cod_personal,concat(Personal.nombres,' ', Personal.apellidopat) from Asignacion inner join Personal
+	on Asignacion.cod_personal = Personal.cod_personal
+	where Asignacion.cod_maq = 
+	(
+	SELECT TOP 1 cod_maq from MAQUINARIA 
+	where cod_maq IN (SELECT TOP  2 cod_maq from MAQUINARIA order by costo_referencial asc) 
+	order by costo_referencial desc
+	)
+	
 --5. Muestre los 2 primeros nombres del personal que no seas perforistas asignados a las maquinarias de Ares con mayor costo
-	--sin sub consulta
-	SELECT Personal.nombres, Personal.apellidopat,Personal.puesto,MAQUINARIA.descripcion,MAQUINARIA.ubicacion,MAQUINARIA.costo_referencial 
-	FROM MAQUINARIA inner join Asignacion 
-	on MAQUINARIA.cod_maq=Asignacion.cod_maq inner join Personal 
-	on Asignacion.cod_personal=Personal.cod_personal
-	where (Personal.puesto !='Perforista' and MAQUINARIA.ubicacion!='Ares')
-	order by costo_referencial desc
-
-	--sub consulta
-	SELECT Personal.nombres, Personal.apellidopat,Personal.puesto,MAQUINARIA.descripcion,MAQUINARIA.ubicacion,MAQUINARIA.costo_referencial 
-	FROM MAQUINARIA inner join Asignacion 
-	on MAQUINARIA.cod_maq=Asignacion.cod_maq inner join Personal 
-	on Asignacion.cod_personal=Personal.cod_personal
-	where Personal.puesto != 'Perforista' and Maquinaria.ubicacion IN (SELECT Personal.nombres, Personal.apellidopat,Personal.puesto,MAQUINARIA.descripcion,MAQUINARIA.ubicacion,MAQUINARIA.costo_referencial 
-												FROM MAQUINARIA inner join Asignacion 
-												on MAQUINARIA.cod_maq=Asignacion.cod_maq inner join Personal 
-												on Asignacion.cod_personal=Personal.cod_personal
-												Where MAQUINARIA.ubicacion != 'Ares')
-
-
-	where (Personal.puesto !='Perforista' and MAQUINARIA.ubicacion!='Ares')
-	order by costo_referencial desc
-
+	SELECT * from Personal
+	where Personal.puesto != 'Perforista'
+	--  1 por uno
 
