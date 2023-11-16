@@ -1,0 +1,149 @@
+CREATE DATABASE VENTAS
+
+USE VENTAS
+
+CREATE TABLE CIUDAD
+(
+codciu char(5) not null,
+nomciu varchar(30) not null,
+constraint pk_ciudad primary key (codciu)
+)
+CREATE TABLE VENDEDOR
+(
+codvende char(4) not null,
+nomvende varchar(30) not null,
+apepvende varchar(30) not null,
+apemvende varchar(30) null,
+constraint pk_vendedor primary key (codvende)
+)
+CREATE TABLE MARCA
+(
+codmar char(4) not null,
+nommar varchar(20) not null,
+constraint pk_marca primary key (codmar)
+)
+CREATE TABLE FORMAPAGO
+(
+codforma char(3) not null,
+nomforma varchar(20) not null,
+constraint pk_forma primary key (codforma)
+)
+CREATE TABLE DISTRITO
+(
+coddist char(5) not null,
+nomdist varchar(30) not null,
+codciu char(5) not null,
+constraint pk_distrito primary key (coddist),
+constraint fk_ciudad foreign key (codciu) references CIUDAD (codciu)
+)
+CREATE TABLE CLIENTE
+(
+nomcli varchar(30) not null,
+apepcli varchar(30) not null,
+apemcli varchar(30) not null,
+fecnac date not null,
+dni char(8) not null,
+codcli char(6) not null,
+direccion varchar(50) not null,
+coddist char(5) not null,
+constraint pk_cliente primary key (codcli),
+constraint fk_distrito foreign key (coddist) references DISTRITO (coddist)
+)
+CREATE TABLE PRODUCTO
+(
+codpro char(6) not null,
+nompro varchar(30) not null,
+precio decimal(6,2),
+codmar char(4) not null,
+constraint pk_producto primary key (codpro),
+constraint fk_marca foreign key (codmar) references MARCA (codmar)
+)
+CREATE TABLE PEDIDO_COMPR
+(
+codped char(8) not null,
+fechped datetime not null,
+codcli char(6) not null,
+codvende char(4) not null,
+nrocomp char(10) not null,
+tipopago char(2) not null,
+codforma char(3) not null,
+subtotalg decimal(6,2) not null,
+igv decimal(6,2) not null,
+total decimal(6,2) not null,
+constraint pk_pedido primary key (codped),
+constraint fk_cliente foreign key (codcli) references CLIENTE (codcli),
+constraint fk_vendedor foreign key (codvende) references VENDEDOR
+(codvende),
+constraint fk_forma foreign key (codforma) references FORMAPAGO (codforma)
+)
+CREATE TABLE PED_PRO
+(
+codped char(8) not null,
+codpro char(6) not null,
+cantidad smallint not null,
+subtotal decimal(6,2) not null,
+constraint fk_pedido foreign key (codped) references PEDIDO_COMPR (codped),
+constraint fk_producto foreign key (codpro) references PRODUCTO (codpro),
+constraint pk_compuesta primary key (codped, codpro)
+)
+
+--adicionar el campo genero/sexo
+ALTER TABLE CLIENTE
+ADD sexo char(1) not null
+--adicionar el campo fecha de caducidad en la tabla producto
+ALTER TABLE PRODUCTO
+ADD fechcadu date null
+--
+INSERT INTO CIUDAD
+VALUES
+('01212','Lima')
+select * from CIUDAD --mostrar los registros de la tabla
+INSERT INTO CIUDAD
+VALUES
+('01213','Arequipa')
+--distrito
+INSERT INTO DISTRITO
+VALUES
+('D0101','Cerro Colorado','01213'),
+('D0102','Surco','01212')
+select * from distrito
+--cliente
+INSERT INTO CLIENTE
+VALUES
+('Juan','Perez','Tejada','01/05/1990','40404040','C0001','Av.Pumacahua
+111','D0101','M'),
+('Rosa','Zevallos','Mamani','12/06/1986','20202020','C0002','Calle los
+Topacios 1236','D0102','F')
+--marca
+INSERT INTO MARCA
+VALUES
+('M01','PORTUGAL'),
+('M02','ROCHE')
+--vendedor
+INSERT INTO VENDEDOR
+VALUES
+('V001','Rogelio','Vera','Gonzales'),
+('V002','Maria','Torres','Quispe')
+--formapago
+INSERT INTO FORMAPAGO
+VALUES
+('F01','Visa'),
+('F02','Efectivo')
+--producto (mm/dd/aaaa)
+INSERT INTO PRODUCTO
+VALUES
+('P001','Jarabe Abrilar 80g', 22.80, 'M01', '11/12/2024'),
+('P002','Capsulas Omeprazol', 5.6, 'M02', '06/15/2025')
+select * from producto
+--pedido_compr
+INSERT INTO PEDIDO_COMPR
+VALUES
+('Pe001','07/26/2023 15:01:12.000','C0001','V001','001-004','EF','F02',
+100, 18, 118),
+('Pe002','07/27/2023 08:06:11.000','C0002','V001','001-005','TA','F01',
+125, 14.6, 149.11)
+--PED_PRO
+INSERT INTO PED_PRO
+VALUES
+('Pe001','P001', 2, 56.3),
+('Pe001','P002', 1, 12.5)
