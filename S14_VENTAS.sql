@@ -147,3 +147,83 @@ INSERT INTO PED_PRO
 VALUES
 ('Pe001','P001', 2, 56.3),
 ('Pe001','P002', 1, 12.5)
+
+
+
+--crear una función que calcule la edad de una persona
+	CREATE FUNCTION calcula_edad (@fecnac date) --se define el parámetro con tipo de datos a enviar a la funcion
+	returns int --indica que tipo de datos retorna
+	Begin
+	Declare @temp as int --declaramos variable con su tipo de datos
+	Set @temp = datediff(year, @fecnac, getdate()) --se asigna a la variable, el calculo
+	Return @temp
+	End
+
+	--SELECT(mm/dd/yy)
+	select dbo.calcula_edad('12/23/2003')
+
+--crear una función que indique cuantos días faltan para su siguiente cumpleaños
+	CREATE FUNCTION días_cumpleaños (@fecumple date)
+	--retorna el tipo de dato
+	returns int
+	begin
+	declare @temp as int
+	set @temp = datediff(day, getdate(), @fecumple)
+	--retorna un valor contenido en la variable
+	return @temp
+	end
+
+	--SELECT
+	select dbo.días_cumpleaños('01/01/2024')
+
+--crear una función que indique cuantos días han transcurrido desde su ultimo cumpleaños a la fecha actual
+	CREATE FUNCTION dias (@dia int, @mes int)
+	returns int
+	begin
+	declare @temp as int
+	set @temp = datediff(day, cast(CONCAT(@dia,'/',@mes,'/',year(getdate()))as date) , getdate())
+	return @temp
+	end
+
+	--modificando con alter
+	alter function [dbo].[dias](@dia int, @mes int)
+	returns int
+	begin
+	declare @temp as int
+	set @temp = datediff(day, cast(CONCAT(@mes,'/',@dia,'/',year(getdate()))as date) , getdate())
+	return @temp
+	end
+
+	
+	select dbo.dias(15,11)
+
+	--modificando con alter
+	alter function [dbo].[dias](@dia int, @mes int)
+	returns int
+	begin
+	declare @temp as int
+
+	if(@mes>=MONTH(getdate()) and (@dia>=day(getdate()) or @dia<=day(getdate()))
+
+		begin		
+			set @temp = datediff(day, cast(CONCAT(@mes,'/',@dia,'/',year(getdate()))as date) , getdate())
+		end
+	else if(@mes<=month(getdate()) and (@dia>=day(getdate()) or @dia<=day(getdate()))
+
+		begin
+			set @temp = datediff(day, getdate(), cast(CONCAT(@mes,'/',@dia,'/',year(getdate()))as date))
+		end
+	return @temp
+	end
+		
+	select dbo.dias(12,12)
+	select dbo.dias(16,11)
+	select dbo.dias(15,10)
+
+	select CONVERT(date, PEDIDO_COMPR.fechped,3) from PEDIDO_COMPR
+	select CAST('01/01/2003' as date)
+
+	select cast(CONCAT('12','/','12','/',year(getdate()))as date)
+
+	select year(GETDATE())
+
