@@ -60,7 +60,7 @@ APP_pasajero char(30) not null,
 APM_pasajero char(30) null,
 genero_PSJ char(9) not null,
 correo_PSJ char(9) not null,
-fecnanpasaj date not null,
+FECHNC_PSJ date not null,
 constraint pk_pasajero primary key (cod_pasajero),
 )
 
