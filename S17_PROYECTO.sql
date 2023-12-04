@@ -388,3 +388,84 @@ VALUES
 ('RS0037','12', 'B','2023/05/08',495.00,'NO VERIFICADO','P0022','V0009'),
 ('RS0038','51', 'C','2022/01/06',565.00,'VERIFICADO','P0021','V0005'),
 ('RS0039','24', 'F','2023/05/07',575.50,'NO VERIFICADO','P0028','V0009')
+
+--JOIN, where (between, like), order by
+--Realiza una consulta que agrupe el origen y destino,ademas que los vuelos sean nacionales 
+--y que muestre la cantidad de reservas con el CHECK_IN verificado
+SELECT ORIGEN.ciudad_origen, DESTINO.ciudad_destino, RESERVA.CHECK_IN ,count(RESERVA.cod_reserva)
+FROM RESERVA inner join VUELO on RESERVA.cod_vuelo = VUELO.cod_vuelo
+inner join RUTA ON VUELO.cod_ruta = RUTA.cod_ruta
+inner join ORIGEN on RUTA.cod_origen = ORIGEN.cod_origen
+inner join DESTINO on RUTA.cod_destino = DESTINO.cod_destino 
+where ORIGEN.ciudad_origen like '%PERU' AND DESTINO.ciudad_destino like '%PERU' 
+AND YEAR(FECH_SALIDA) in ('2022','2023') AND RESERVA.CHECK_IN='VERIFICADO' 
+group by ORIGEN.ciudad_origen,DESTINO.ciudad_destino, RESERVA.CHECK_IN
+
+--Group by y Having
+--Realiza una consulta en la que cuente las personas que llevan el mismo apellido paterno y que el numero no sea menor o igual que 2
+select APP_tripu, count(APP_tripu)
+from tripulacion
+group by APP_tripu
+having count(APP_tripu) >=2
+
+--SUB CONSULTA
+--Mostrar las las reservas cuyo precio este por encima del promedio
+select * from reserva
+where precio > (select avg(precio)
+from
+RESERVA)
+
+--FUNCION
+--Realiza una funcion para saber si un asiento esta ocupado y mostrar un mensaje
+CREATE FUNCTION VERIFICARASIENTO (@VUELO1 char(5), @FILA1 VARCHAR(2), @COLUMNA1 CHAR(1))
+RETURNS VARCHAR(30)
+AS
+BEGIN
+    DECLARE @TEMP AS CHAR(3)
+    DECLARE @TEMP2 AS VARCHAR(30)  
+    
+    SET @TEMP = (SELECT CONCAT(AST_FILA, AST_COLUMNA) FROM RESERVA
+                    WHERE cod_vuelo = @VUELO1 and AST_FILA = @FILA1 and AST_COLUMNA = @COLUMNA1)
+    
+    IF (@TEMP IS NOT NULL)  
+    BEGIN
+        SET @TEMP2 = 'Asiento ocupado'
+    END
+    ELSE
+    BEGIN
+        SET @TEMP2 = 'Asiento sin ocupar'
+    END
+    
+    RETURN @TEMP2 
+END
+
+select dbo.VERIFICARASIENTO('V0004','40','A')
+Select dbo.VERIFICARASIENTO('V0004','20','C')
+
+
+--PROCEDIMIENTO ALMACENADO
+--Realice un procedimineto almacenado el registre un nuevo pasajero 
+CREATE PROCEDURE registrar_pasajero
+    @cod_pasa char(5),
+    @DNI1 CHAR(8),
+    @nombre_pasa varchar(30),
+    @apepa_pasa varchar(30),
+	@apema_pasa varchar(30),
+    @sexo varchar(9),
+    @correo_pasa varchar(30) ,
+    @FCH_NACI date 
+AS
+BEGIN
+	IF EXISTS (SELECT cod_pasajero FROM PASAJERO WHERE cod_pasajero = @cod_pasa)
+			PRINT 'El código se repite'
+    ELSE
+			INSERT INTO PASAJERO VALUES (@cod_pasa, @DNI1, @nombre_pasa, @apepa_pasa,@apema_pasa , @sexo, @correo_pasa, @FCH_NACI)
+END
+
+EXECUTE registrar_pasajero 
+'P0050', '75615304', 'CRISTHIAN DIEGO', 'HUARACHA', 'VENTURA', 'MASCULINO' ,'U22237038@utp.edu.pe', '12/23/2003'
+
+EXECUTE registrar_pasajero 
+'P0049', '76615345', 'JESUS ROLANDO	', 'SARMIENTO ', 'OLAZABAL', 'MASCULINO' ,'U19213545@utp.edu.pe', '05/18/2004'
+
+
