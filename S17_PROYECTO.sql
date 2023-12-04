@@ -11,23 +11,23 @@ constraint pk_avion primary key (cod_avion)
 
 CREATE TABLE DESTINO
 (
-cod_destino  char(5) not null,
-ciudad_destino varchar(30) not null,
+cod_destino  char(6) not null,
+ciudad_destino varchar(50) not null,
 constraint pk_destino primary key (cod_destino)
 )
 
 CREATE TABLE ORIGEN
 (
-cod_origen  char(5) not null,
-ciudad_origen varchar(30) not null,
+cod_origen  char(6) not null,
+ciudad_origen varchar(50) not null,
 constraint pk_origen primary key (cod_origen)
 )
 
 CREATE TABLE RUTA
 (
 cod_ruta char(4) not null,
-cod_origen  char(5) not null,
-cod_destino  char(5) not null,
+cod_origen  char(6) not null,
+cod_destino  char(6) not null,
 constraint pk_ruta primary key (cod_ruta),
 constraint fk_origen foreign key (cod_origen) references ORIGEN (cod_origen),
 constraint fk_destino foreign key (cod_destino) references DESTINO (cod_destino)
@@ -42,7 +42,7 @@ constraint pk_puesto primary key (cod_puesto)
 
 CREATE TABLE TRIPULACION
 (
-cod_tripulacion char(5) not null,
+cod_tripulacion char(4) not null,
 nom_tripulacion varchar(30) not null,
 APP_tripu varchar(30) not null,
 APM_tripu varchar(30) null,
@@ -55,22 +55,22 @@ CREATE TABLE PASAJERO
 (
 cod_pasajero char(5) not null,
 DNI char(8) not null,
-nombre_pasajero char(30) not null,
-APP_pasajero char(30) not null,
-APM_pasajero char(30) null,
-genero_PSJ char(9) not null,
-correo_PSJ char(9) not null,
-fecnanpasaj date not null,
+nombre_pasajero varchar(30) not null,
+APP_pasajero varchar(30) not null,
+APM_pasajero varchar(30) null,
+genero_PSJ varchar(9) not null,
+correo_PSJ varchar(30) not null,
+FECHNC_PSJ date not null,
 constraint pk_pasajero primary key (cod_pasajero),
 )
 
 CREATE TABLE ASIENTO
 (
-AST_FILA  char(2) not null,
-AST_COLUMNA varchar(1) not null,
-constraint pk_asiento primary key (AST_COLUMNA, AST_FILA)
+AST_FILA  varchar(2) not null,
+AST_COLUMNA char(1) not null,
+constraint pk_asiento primary key (AST_FILA,AST_COLUMNA)
 )
---claves foraneas
+
 CREATE TABLE VUELO
 (
 cod_vuelo char(5) not null,
@@ -86,23 +86,23 @@ constraint fk_ruta foreign key (cod_ruta) references RUTA (cod_ruta),
 CREATE TABLE VUELO_TRIPULACION
 (
 cod_vuelo char(5) not null,
-cod_tripulacion char(5) not null,
+cod_tripulacion char(4) not null,
 constraint fk_vueloTripu foreign key (cod_vuelo) references VUELO (cod_vuelo),
 constraint fk_tripulacion foreign key (cod_tripulacion) references TRIPULACION (cod_tripulacion)
 )
 
 CREATE TABLE RESERVA
 (
-cod_reserva char(5) not null,
-AST_FILA  char(2) not null,
-AST_COLUMNA varchar(1) not null,
+cod_reserva char(6) not null,
+AST_FILA  varchar(2) not null,
+AST_COLUMNA char(1) not null,
 FECH_RESERVA datetime not null,
 precio decimal (10,2) not null,
 CHECK_IN varchar(20) not null,
 cod_pasajero char(5) not null,
 cod_vuelo char(5) not null,
 constraint pk_reserva primary key (cod_reserva),
-constraint fk_asiento foreign key (AST_COLUMNA, AST_FILA) references ASIENTO (AST_COLUMNA, AST_FILA),
+constraint fk_asiento foreign key (AST_FILA,AST_COLUMNA) references ASIENTO (AST_FILA,AST_COLUMNA),
 constraint fk_vuelo foreign key (cod_vuelo) references VUELO (cod_vuelo),
 constraint fk_pasajero foreign key (cod_pasajero) references PASAJERO (cod_pasajero)
 )
@@ -389,4 +389,3 @@ VALUES
 ('RS0037','12', 'B','08/05/2023',495.00,'NO VERIFICADO','P0022','V0009'),
 ('RS0038','51', 'C','06/01/2022',565.00,'VERIFICADO','P0021','V0005'),
 ('RS0039','24', 'F','07/05/2023',575.50,'NO VERIFICADO','P0028','V0009')
-
