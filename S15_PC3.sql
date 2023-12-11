@@ -506,6 +506,28 @@ DECLARE @TEMP AS VARCHAR(20)|
 	select CONVERT(date, PEDIDO_COMPR.fechped,3) from PEDIDO_COMPR
 	select CAST('01/01/2003' as date)
 
+	
+---------------------------------------------
+--     Procedimiento Almacenado            --
+---------------------------------------------
+--Realice un procedimineto almacenado el registre un nuevo pasajero 
+CREATE PROCEDURE registrar_pasajero
+    @cod_pasa char(5),
+    @DNI1 CHAR(8),
+    @nombre_pasa varchar(30),
+    @apepa_pasa varchar(30),
+	@apema_pasa varchar(30),
+    @sexo varchar(9),
+    @correo_pasa varchar(30) ,
+    @FCH_NACI date 
+AS
+BEGIN
+	IF EXISTS (SELECT cod_pasajero FROM PASAJERO WHERE cod_pasajero = @cod_pasa)
+			PRINT 'El código se repite'
+    ELSE
+			INSERT INTO PASAJERO VALUES (@cod_pasa, @DNI1, @nombre_pasa, @apepa_pasa,@apema_pasa , @sexo, @correo_pasa, @FCH_NACI)
+END
+
 	select cast(CONCAT('12','/','12','/',year(getdate()))as date)
 
 	select year(GETDATE())
