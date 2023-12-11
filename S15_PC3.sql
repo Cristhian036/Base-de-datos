@@ -505,6 +505,21 @@ DECLARE @TEMP AS VARCHAR(20)|
 
 	select CONVERT(date, PEDIDO_COMPR.fechped,3) from PEDIDO_COMPR
 	select CAST('01/01/2003' as date)
+	
+	select cast(CONCAT('12','/','12','/',year(getdate()))as date)
+
+	select year(GETDATE())
+
+
+--Haga una subconsulta que muestre las 2 razones sociales que menos multa han obtenido, solo si existen multas en el año 2020
+
+Su respuesta:
+SELECT top 2 usuario.razon, vehiculos.placa from faltas inner JOIN vehiculos on faltas.placa = vehiculos.placa inner join usuario on vehiculos.ruc = usuario.ruc
+where exists (
+    select  faltas.placa from faltas inner JOIN vehiculos on faltas.placa = vehiculos.placa inner join usuario on vehiculos.ruc = usuario.ruc
+	year(faltas.fecfalta)='2020')
+    Group by faltas.placa
+    order by sum(faltas.multa) asc
 
 	
 ---------------------------------------------
@@ -516,7 +531,7 @@ CREATE PROCEDURE registrar_pasajero
     @DNI1 CHAR(8),
     @nombre_pasa varchar(30),
     @apepa_pasa varchar(30),
-	@apema_pasa varchar(30),
+    @apema_pasa varchar(30),
     @sexo varchar(9),
     @correo_pasa varchar(30) ,
     @FCH_NACI date 
@@ -528,6 +543,6 @@ BEGIN
 			INSERT INTO PASAJERO VALUES (@cod_pasa, @DNI1, @nombre_pasa, @apepa_pasa,@apema_pasa , @sexo, @correo_pasa, @FCH_NACI)
 END
 
-	select cast(CONCAT('12','/','12','/',year(getdate()))as date)
-
-	select year(GETDATE())
+EXECUTE registrar_pasajero
+'P0050', '75615304', 'CRISTHIAN DIEGO', 'HUARACHA', 'VENTURA', 'MASCULINO'
+,'U22237038@utp.edu.pe', '12/23/2003' 
